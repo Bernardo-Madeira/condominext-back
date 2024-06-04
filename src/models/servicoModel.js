@@ -2,12 +2,29 @@ const connection = require('./connection')
 
 const index = async () => {
   try {
-    const [servicos] = await connection.execute('SELECT * FROM servicos')
-    return servicos
+    const query = `
+      SELECT 
+        s.ServicoID,
+        s.PrestadorID,
+        s.Nome,
+        s.Descricao,
+        s.Categoria,
+        s.DataCriacao,
+        COUNT(a.AvaliacaoID) AS TotalAvaliacoes
+      FROM 
+        servicos s
+      LEFT JOIN 
+        avaliacoes a ON s.ServicoID = a.ServicoID
+      GROUP BY 
+        s.ServicoID, s.Nome
+    `;
+    const [results] = await connection.execute(query);
+    return results;
   } catch (error) {
-    throw new Error(error.message)
+    throw new Error(error.message);
   }
 }
+
 
 const show = async (ServicoID) => {
   try {
