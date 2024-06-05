@@ -24,11 +24,12 @@ router.post('/servico/update', servicoController.update)
 router.post('/servico/destroy', servicoController.destroy)
 
 // PEDIDO
-router.get('/pedido/index', pedidoController.index)
+router.post('/pedido/index', pedidoController.index)
 router.get('/pedido/show/:PedidoID', pedidoController.show)
 router.post('/pedido/store', pedidoController.store)
 router.post('/pedido/update', pedidoController.update)
 router.post('/pedido/destroy', pedidoController.destroy)
+router.post('/pedido/prestador', pedidoController.prestador)
 
 // AVALIAÇÃO
 router.get('/avaliacao/index', avaliacaoController.index)

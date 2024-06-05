@@ -33,12 +33,12 @@ const store = async (body) => {
 }
 
 const update = async (body) => {
-  const { Email, Senha, Telefone, Permissao, Bloco, Apartamento, UsuarioID } = body
+  const { Email, Telefone, Bloco, Apartamento, UsuarioID } = body
 
   try {
     await connection.execute(
-      `UPDATE usuarios SET Email = ?, Senha = ?, Telefone = ?, Permissao = ?, Bloco = ?, Apartamento = ? WHERE UsuarioID = ?`,
-      [Email, Senha, Telefone, Permissao, Bloco, Apartamento, UsuarioID]
+      `UPDATE usuarios SET Email = ?, Telefone = ?, Bloco = ?, Apartamento = ? WHERE UsuarioID = ?`,
+      [Email, Telefone, Bloco, Apartamento, UsuarioID]
     )
     return { message: 'Usuário atualizado com sucesso.' }
   } catch (error) {

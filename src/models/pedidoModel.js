@@ -1,13 +1,20 @@
 const connection = require('./connection')
 
-const index = async () => {
+const index = async (body) => {
+  const { MoradorID } = body;
   try {
-    const [pedidos] = await connection.execute('SELECT * FROM pedidos')
-    return pedidos
+    const [pedidos] = await connection.execute(`
+      SELECT *
+      FROM pedidos
+      INNER JOIN servicos ON pedidos.ServicoID = servicos.ServicoID
+      WHERE pedidos.MoradorID = ${MoradorID}
+    `);
+    return pedidos;
   } catch (error) {
-    throw new Error(error.message)
+    throw new Error(error.message);
   }
-}
+};
+
 
 const show = async (PedidoID) => {
   try {
@@ -54,10 +61,27 @@ const destroy = async (PedidoID) => {
   }
 }
 
+const prestador = async (PrestadorID) => {
+  try {
+    const [pedidos] = await connection.execute(`
+      SELECT pedidos.*
+      FROM pedidos
+      INNER JOIN servicos ON pedidos.ServicoID = servicos.ServicoID
+      INNER JOIN usuarios ON servicos.PrestadorID = usuarios.UsuarioID
+    `, [PrestadorID]);
+    return pedidos;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
+
+
 module.exports = {
   index,
   show,
   store,
   update,
-  destroy
+  destroy,
+  prestador
 }

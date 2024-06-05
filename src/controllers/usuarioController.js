@@ -42,8 +42,8 @@ const store = async (request, response) => {
 }
 
 const update = async (request, response) => {
-  const { UsuarioID, Email, Senha, Telefone, Permissao, Bloco, Apartamento } = request.body
-  if (!UsuarioID || !Email || !Senha || !Telefone || !Permissao || !Bloco || !Apartamento) {
+  const { UsuarioID, Email, Telefone, Bloco, Apartamento } = request.body
+  if (!UsuarioID || !Email || !Telefone || !Bloco || !Apartamento) {
     return response.status(400).json({ message: 'Todos os campos são obrigatórios' })
   }
   try {

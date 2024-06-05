@@ -1,8 +1,12 @@
 const pedidoModel = require('../models/pedidoModel')
 
 const index = async (request, response) => {
+  const {MoradorID} = request.body
+  if (!MoradorID) {
+    return response.status(400).json({ message: 'Todos os campos são obrigatórios' })
+  }
   try {
-    const pedidos = await pedidoModel.index()
+    const pedidos = await pedidoModel.index(request.body)
     return response.status(200).json(pedidos)
   } catch (error) {
     return response.status(500).json({ message: error.message })
@@ -70,10 +74,24 @@ const destroy = async (request, response) => {
   }
 }
 
+const prestador = async (request, response) => {
+  const {PrestadorID} = request.body
+  try {
+    const modelRes = await pedidoModel.prestador(request.body)
+    if (modelRes.message === 'Pedido atualizado com sucesso.') {
+      return response.status(202).json(modelRes)
+    }
+    return response.status(400).json(modelRes)
+  } catch (error) {
+    return response.status(500).json({ message: error.message })
+  }
+}
+
 module.exports = {
   index,
   show,
   store,
   update,
-  destroy
+  destroy,
+  prestador
 }
