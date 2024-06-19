@@ -1,105 +1,84 @@
-const connection = require('./connection')
+const connection = require('./connection');
 
-const index = async () => {
+const index = async (PrestadorID) => {
   try {
-    const query = `
-      SELECT 
-        s.ServicoID,
-        s.PrestadorID,
-        s.Nome,
-        s.Descricao,
-        s.Categoria,
-        s.DataCriacao,
-        u.Email AS Email,
-        u.Telefone AS Telefone,
-        u.Bloco AS Bloco,
-        U.Apartamento AS Apartamento,
-        COUNT(a.AvaliacaoID) AS TotalAvaliacoes,
-        AVG(a.Nota) AS AvaliacaoMedia
-      FROM 
-        servicos s
-      LEFT JOIN 
-        avaliacoes a ON s.ServicoID = a.ServicoID
-      LEFT JOIN
-        usuarios u ON s.PrestadorID = u.UsuarioID
-      GROUP BY 
-        s.ServicoID, s.Nome
-    `;
-    const [results] = await connection.execute(query);
+    const query = 'SELECT * FROM servicos WHERE PrestadorID = ?';
+    const [results] = await connection.execute(query, [PrestadorID]);
     return results;
   } catch (error) {
-    throw new Error(error.message);
+    throw new Error(`Database query failed: ${error.message}`);
   }
 }
-
 
 
 const show = async (ServicoID) => {
   try {
     const [servico] = await connection.execute('SELECT * FROM servicos WHERE ServicoID = ?', [ServicoID]);
-    const [avaliacoes] = await connection.execute('SELECT * FROM avaliacoes WHERE ServicoID = ?', [ServicoID]);
-    const [prestador] = await connection.execute('SELECT * FROM usuarios WHERE UsuarioID = ?', [servico[0].PrestadorID]);
-    const totalAvaliacoes = avaliacoes.length;
+    const [prestador] = await connection.execute('SELECT * FROM fornecedores WHERE PrestadorID = ?', [servico[0].PrestadorID]);
+    const [avaliacoes] = await connection.execute('SELECT avaliacoes.* FROM avaliacoes JOIN pedidos ON avaliacoes.PedidoID = pedidos.PedidoID JOIN servicos ON pedidos.ServicoID = servicos.ServicoID WHERE servicos.ServicoID = ?', [ServicoID]);
 
-    let mediaNotas = null;
-    if (avaliacoes.length > 0) {
-      const [result] = await connection.execute('SELECT AVG(Nota) AS MediaNotas FROM avaliacoes WHERE ServicoID = ?', [ServicoID]);
-      mediaNotas = result[0].MediaNotas;
-    }
-    
     return {
       servico: servico[0],
-      avaliacoes: avaliacoes,
       prestador: prestador[0],
-      totalAvaliacoes: totalAvaliacoes,
-      mediaNotas: mediaNotas
+      avaliacoes: avaliacoes
     };
   } catch (error) {
     throw new Error(error.message);
   }
-}
+};
 
 
 const store = async (body) => {
-  const { PrestadorID, Nome, Descricao, Categoria } = body
-  console.log(new Date())
+  const { PrestadorID, Nome, Descricao, Categoria } = body;
   try {
     const [result] = await connection.execute(
-      'INSERT INTO servicos (PrestadorID, Nome, Descricao, Categoria, DataCriacao) VALUES (?, ?, ?, ?, ?)',
-      [PrestadorID, Nome, Descricao, Categoria, new Date()]
-    )
-    return { ServicoID: result.insertId }
+      'INSERT INTO servicos (PrestadorID, Nome, Descricao, Categoria, Media) VALUES (?, ?, ?, ?, ?)',
+      [PrestadorID, Nome, Descricao , Categoria, 0]
+    );
+    return { ServicoID: result.insertId };
   } catch (error) {
-    throw new Error(error.message)
+    throw new Error(error.message);
   }
-}
+};
 
 const update = async (body) => {
-  const { ServicoID, Nome, Descricao, Categoria } = body
+  const { ServicoID, Nome, Descricao, Categoria } = body;
   try {
     await connection.execute(
       'UPDATE servicos SET Nome = ?, Descricao = ?, Categoria = ? WHERE ServicoID = ?',
       [Nome, Descricao, Categoria, ServicoID]
-    )
-    return { message: 'Serviço atualizado com sucesso.' }
+    );
+    return { message: 'Serviço atualizado com sucesso.' };
   } catch (error) {
-    throw new Error(error.message)
+    throw new Error(error.message);
   }
-}
+};
 
 const destroy = async (ServicoID) => {
   try {
-    await connection.execute('DELETE FROM servicos WHERE ServicoID = ?', [ServicoID])
-    return { message: 'Serviço excluído com sucesso.' }
+    await connection.execute('DELETE FROM servicos WHERE ServicoID = ?', [ServicoID]);
+    return { message: 'Serviço excluído com sucesso.' };
   } catch (error) {
-    throw new Error(error.message)
+    throw new Error(error.message);
+  }
+};
+
+const getAllServicos = async () => {
+  try {
+    const query = 'SELECT * FROM servicos';
+    const [results] = await connection.execute(query);
+    return results;
+  } catch (error) {
+    throw new Error(`Database query failed: ${error.message}`);
   }
 }
+
 
 module.exports = {
   index,
   show,
   store,
   update,
-  destroy
-}
+  destroy,
+  getAllServicos
+};

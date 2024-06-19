@@ -26,12 +26,12 @@ const show = async (PedidoID) => {
 }
 
 const store = async (body) => {
-  const { ServicoID, MoradorID, Descricao } = body
+  const { ServicoID, MoradorID } = body
   const data = new Date()
   try {
     const [result] = await connection.execute(
-      'INSERT INTO pedidos (ServicoID, MoradorID, Status, Descricao, DataRegistro, DataAtualizacao) VALUES (?, ?, ?, ?, ?, ?)',
-      [ServicoID, MoradorID, "Pendente", Descricao, data, data]
+      'INSERT INTO pedidos (ServicoID, MoradorID, Estado, DataPedido) VALUES (?, ?, ?, ?)',
+      [ServicoID, MoradorID, "Pendente", data]
     )
     return { PedidoID: result.insertId }
   } catch (error) {
@@ -40,11 +40,11 @@ const store = async (body) => {
 }
 
 const update = async (body) => {
-  const { PedidoID, Status } = body
+  const { PedidoID, Estado } = body
   try {
     await connection.execute(
-      'UPDATE pedidos SET Status = ?, DataAtualizacao = ? WHERE PedidoID = ?',
-      [Status, new Date(), PedidoID]
+      'UPDATE pedidos SET Estado = ? WHERE PedidoID = ?',
+      [Estado, PedidoID]
     )
     return { message: 'Pedido atualizado com sucesso.' }
   } catch (error) {

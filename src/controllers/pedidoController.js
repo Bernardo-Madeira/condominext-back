@@ -30,9 +30,9 @@ const show = async (request, response) => {
 }
 
 const store = async (request, response) => {
-  const { ServicoID, MoradorID, Descricao } = request.body
-  if (!ServicoID || !MoradorID || !Descricao) {
-    return response.status(400).json({ message: 'Todos os campos são obrigatórios' })
+  const { ServicoID, MoradorID } = request.body
+  if (!ServicoID || !MoradorID ) {
+    return response.status(400).json({ message: 'ServicoID e MoradorID são obrigatórios' })
   }
   try {
     const modelRes = await pedidoModel.store(request.body)
@@ -43,8 +43,8 @@ const store = async (request, response) => {
 }
 
 const update = async (request, response) => {
-  const { PedidoID, Status } = request.body
-  if (!PedidoID || !Status) {
+  const { PedidoID, Estado } = request.body
+  if (!PedidoID || !Estado) {
     return response.status(400).json({ message: 'Todos os campos são obrigatórios' })
   }
   try {
