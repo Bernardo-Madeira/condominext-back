@@ -15,17 +15,32 @@ const show = async (ServicoID) => {
   try {
     const [servico] = await connection.execute('SELECT * FROM servicos WHERE ServicoID = ?', [ServicoID]);
     const [prestador] = await connection.execute('SELECT * FROM fornecedores WHERE PrestadorID = ?', [servico[0].PrestadorID]);
-    const [avaliacoes] = await connection.execute('SELECT avaliacoes.* FROM avaliacoes JOIN pedidos ON avaliacoes.PedidoID = pedidos.PedidoID JOIN servicos ON pedidos.ServicoID = servicos.ServicoID WHERE servicos.ServicoID = ?', [ServicoID]);
+    const [avaliacoes] = await connection.execute(`
+      SELECT avaliacoes.*, moradores.Usuario, moradores.bloco, moradores.apartamento
+      FROM avaliacoes 
+      JOIN pedidos ON avaliacoes.PedidoID = pedidos.PedidoID 
+      JOIN servicos ON pedidos.ServicoID = servicos.ServicoID 
+      JOIN moradores ON avaliacoes.MoradorID = moradores.MoradorID 
+      WHERE servicos.ServicoID = ?
+    `, [ServicoID]);
 
     return {
       servico: servico[0],
       prestador: prestador[0],
-      avaliacoes: avaliacoes
+      avaliacoes: avaliacoes.map(avaliacao => ({
+        AvaliacaoID: avaliacao.AvaliacaoID,
+        PedidoID: avaliacao.PedidoID,
+        MoradorID: avaliacao.MoradorID,
+        Nota: avaliacao.Nota,
+        Descricao: avaliacao.Descricao,
+        Usuario: avaliacao.Usuario,
+      }))
     };
   } catch (error) {
     throw new Error(error.message);
   }
 };
+
 
 
 const store = async (body) => {

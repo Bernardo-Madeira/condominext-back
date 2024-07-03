@@ -19,17 +19,27 @@ const show = async (AvaliacaoID) => {
 }
 
 const store = async (body) => {
-  const { MoradorID, Descricao, Nota, ServicoID } = body
+  const { MoradorID, Descricao, Nota, PedidoID } = body
   try {
     const [result] = await connection.execute(
-      'INSERT INTO avaliacoes (MoradorID, Descricao, Nota, DataRegistro) VALUES (?, ?, ?, ?)',
-      [MoradorID, Descricao, Nota, new Date()]
+      'INSERT INTO avaliacoes (MoradorID, Descricao, Nota, PedidoID) VALUES (?, ?, ?, ?)',
+      [MoradorID, Descricao, Nota, PedidoID]
     )
-    return { AvaliacaoID: result.insertId }
+
+    const AvaliacaoID = result.insertId
+
+    // Agora vamos atualizar o PedidoID com o AvaliacaoID na tabela pedidos
+    await connection.execute(
+      'UPDATE pedidos SET AvaliacaoID = ? WHERE PedidoID = ?',
+      [AvaliacaoID, PedidoID]
+    )
+
+    return { AvaliacaoID }
   } catch (error) {
     throw new Error(error.message)
   }
 }
+
 
 const destroy = async (AvaliacaoID) => {
   try {

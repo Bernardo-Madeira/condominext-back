@@ -73,29 +73,10 @@ const destroy = async (request, response) => {
   }
 }
 
-const loginUsuario = async (req, res) => {
-  const { Email, Senha } = req.body;
-
-  if (!Email || !Senha) {
-    return res.status(400).json({ message: 'Email e Senha são obrigatórios' });
-  }
-
-  try {
-    const usuario = await usuarioModel.loginUsuario(req.body);
-    if (!usuario) {
-      return res.status(404).json({ message: 'Usuário não encontrado' });
-    }
-    return res.status(200).json(usuario);
-  } catch (error) {
-    return res.status(500).json({ message: error.message });
-  }
-};
-
 module.exports = {
   index,
   show,
   store,
   update,
   destroy,
-  loginUsuario
 }

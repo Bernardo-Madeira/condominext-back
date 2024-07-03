@@ -55,26 +55,10 @@ const destroy = async (UsuarioID) => {
   }
 }
 
-const loginUsuario = async (body) => {
-  try {
-    const [user] = await connection.execute(
-      'SELECT UsuarioID, Email, Telefone, Bloco, Apartamento, Permissao FROM usuarios WHERE Email = ? AND Senha = ?',
-      [body.Email, body.Senha] // Passa os parâmetros corretamente
-    );
-    return user[0];
-  } catch (error) {
-    return { message: error.message };
-  }
-};
-
-module.exports = { loginUsuario };
-
-
 module.exports = {
   index,
   show,
   store,
   update,
   destroy,
-  loginUsuario
 }

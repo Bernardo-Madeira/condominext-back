@@ -10,6 +10,8 @@ const login = async (req, res) => {
       return res.status(404).json({ message: 'Credenciais inválidas.' });
     }
 
+    console.log(usuario)
+
     switch (usuario.tipo) {
       case 'administrador':
         return res.status(200).json({ tipo: 'administrador', usuario: usuario.usuario });

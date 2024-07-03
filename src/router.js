@@ -18,7 +18,6 @@ router.get('/usuario/show/:UsuarioID', usuarioController.show)
 router.post('/usuario/store', usuarioController.store)
 router.post('/usuario/update', usuarioController.update)
 router.post('/usuario/destroy', usuarioController.destroy)
-router.post('/usuario/login', usuarioController.loginUsuario)
 
 // SERVIÇO
 router.post('/servico/index', servicoController.index)

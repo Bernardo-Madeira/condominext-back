@@ -26,8 +26,8 @@ const show = async (request, response) => {
 }
 
 const store = async (request, response) => {
-  const { MoradorID, Descricao, Nota, ServicoID } = request.body
-  if (!MoradorID || !Descricao || !Nota || !ServicoID ) {
+  const { MoradorID, Descricao, Nota, PedidoID } = request.body
+  if (!MoradorID || !Descricao || Nota == null || !PedidoID ) {
     return response.status(400).json({ message: 'Todos os campos são obrigatórios' })
   }
   try {
