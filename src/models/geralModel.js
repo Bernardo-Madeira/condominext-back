@@ -32,8 +32,18 @@ const login = async ({ Email, Senha }) => {
         morador.PrestadorID = usuario[0].PrestadorID;
       }
 
+      const [pedidosConcluidos] = await connection.execute(
+        'SELECT * FROM pedidos WHERE MoradorID = ? AND Estado = "concluido" AND AvaliacaoID IS NULL',
+        [morador.MoradorID]
+      )
+
+      const avaliacaoPendente = pedidosConcluidos.length
+
       // Retorna o morador com ou sem o PrestadorID
-      return { tipo: 'morador', usuario: morador };
+      return { tipo: 'morador', usuario: morador, avaliacaoPendente }
+
+      // Retorna o morador com ou sem o PrestadorID
+      return { tipo: 'morador', usuario: morador, avaliacaoPendente: true };
     }
 
     // Verifica na tabela fornecedores

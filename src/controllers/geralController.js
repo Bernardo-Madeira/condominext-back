@@ -10,15 +10,13 @@ const login = async (req, res) => {
       return res.status(404).json({ message: 'Credenciais inválidas.' });
     }
 
-    console.log(usuario)
-
     switch (usuario.tipo) {
       case 'administrador':
         return res.status(200).json({ tipo: 'administrador', usuario: usuario.usuario });
       case 'prestador':
         return res.status(200).json({ tipo: 'prestador', usuario: usuario.usuario });
       case 'morador':
-        return res.status(200).json({ tipo: 'morador', usuario: usuario.usuario });
+        return res.status(200).json({ tipo: 'morador', usuario: usuario.usuario, avaliacaoPendente: usuario.avaliacaoPendente });
       default:
         return res.status(404).json({ message: 'Tipo de usuário desconhecido.' });
     }

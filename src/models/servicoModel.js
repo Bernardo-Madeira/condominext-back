@@ -80,14 +80,25 @@ const destroy = async (ServicoID) => {
 
 const getAllServicos = async () => {
   try {
-    const query = 'SELECT * FROM servicos';
+    // Consulta SQL para obter todos os serviços com a média das notas das avaliações
+    const query = `
+      SELECT 
+        s.*,
+        AVG(a.Nota) AS MediaAvaliacoes
+      FROM 
+        servicos s
+        LEFT JOIN pedidos p ON s.ServicoID = p.ServicoID
+        LEFT JOIN avaliacoes a ON p.AvaliacaoID = a.AvaliacaoID
+      GROUP BY
+        s.ServicoID
+    `;
+    
     const [results] = await connection.execute(query);
     return results;
   } catch (error) {
     throw new Error(`Database query failed: ${error.message}`);
   }
 }
-
 
 module.exports = {
   index,
